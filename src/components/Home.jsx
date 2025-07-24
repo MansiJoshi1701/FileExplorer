@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Home({ data }) {
+function Home({ handleInsertNode , data }) {
 
     const [expand , setExpand] = useState(false);
     const [showInput , setShowInput] = useState({
@@ -9,13 +9,23 @@ function Home({ data }) {
     });
 
     const handleClick = (e , isFolder) => {
-
         e.stopPropagation();
         setShowInput({
             isVisible: true,
             isFolder
         });
-        //setExpand(true);
+    }
+
+
+    const addNewFolder = (e) => {
+
+        //e.keycode === 13 , is basically to check that the key pressed is 'Enter'
+        if(e.keyCode === 13 && e.target.value){
+            handleInsertNode(data.id,e.target.value,showInput.isFolder)
+            setShowInput({...showInput , isVisible: false});
+        }
+        
+
     }
     
     if(data.isFolder) {
@@ -39,6 +49,7 @@ function Home({ data }) {
                                 className="inputContainer_input" 
                                 autoFocus
                                 onBlur={() => setShowInput({...showInput , isVisible: false})}
+                                onKeyDown={addNewFolder}
                             />
                         </div>
                     )
@@ -46,10 +57,9 @@ function Home({ data }) {
 
                 <div style={{display: expand ? "block" : "none" , paddingLeft: 25}}>
                     
-
                     {data.children.map((folder) => {
                         return(
-                            <Home data={folder} key={folder.id}/> //This is how to display recursively
+                            <Home handleInsertNode={handleInsertNode} data={folder} key={folder.id}/> //This is how to display recursively
                         )
                     })
                     }
